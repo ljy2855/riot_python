@@ -1,5 +1,7 @@
 import requests
+import re
 from module import sohwan
+
 api_key = 'RGAPI-02d294e0-16b8-4e0f-9920-7bd3da3ea8e0'
 
 def get_id(user_name):
@@ -19,18 +21,19 @@ def active_game(user_name):
     index = 0
     new = []
     for i in r.json()['participants']:
-        new.append(sohwan(0,i['summonerId'],i['summonerName']))
+        new.append(get_id(i['summonerName']))
         new[index].get_match_info(i['teamId'],i['championId'])
         print(new[index].name)
         get_current_match(new[index],20)
         index += 1
 
 def dodge():
-    ip = []
+    summ = []
     for i in range(5):
-        line = raw_input()
-        ip.append(line)
-        print(line)
+        line = input()
+        index = line.find("님")
+        summ.append(get_id(line[0:index]))
+        get_current_match(summ[i],30)
 
 
     
@@ -50,8 +53,7 @@ def count_game(user_name,targetSeason):
     beginIndex = 0
     endIndex = 100
     totalGame = 0
-    lane_win = 0
-    cham_win = 0
+
     #'?beginIndex=' + str(beginIndex) + '?endIndex=' + str(endIndex)
     while True:
         m = 'https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/' + summ.accountID + '?beginIndex=' + str(beginIndex) + '&endIndex=' + str(endIndex) + '&api_key=' + api_key
