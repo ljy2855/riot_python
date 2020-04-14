@@ -1,17 +1,50 @@
 import requests
 from module import sohwan
+api_key = 'RGAPI-02d294e0-16b8-4e0f-9920-7bd3da3ea8e0'
 
 def get_id(user_name):
-    api_key = 'RGAPI-caee47f0-c808-4b91-9c60-e2aeb5f61f42'
 
-    summ = 'https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + user_name + '?api_key=' + api_key
-    r = requests.get(summ)
+    url = 'https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + user_name + '?api_key=' + api_key
+    r = requests.get(url)
     new = sohwan(r.json()['id'],r.json()['accountId'],user_name)
     return new
 
 
+def active_game(user_name):
+    summ = get_id(user_name)
+    print(summ.id)
+    url = 'https://kr.api.riotgames.com/lol/spectator/v4/active-games/by-summoner/' + summ.id + '?api_key=' + api_key
+    r = requests.get(url)
+    print(r)
+    index = 0
+    new = []
+    for i in r.json()['participants']:
+        new.append(sohwan(0,i['summonerId'],i['summonerName']))
+        new[index].get_match_info(i['teamId'],i['championId'])
+        print(new[index].name)
+        get_current_match(new[index],20)
+        index += 1
+
+def dodge():
+    ip = []
+    for i in range(5):
+        line = raw_input()
+        ip.append(line)
+        print(line)
+
+
+    
+    
+def get_current_match(sohwan,cnt):
+    url = 'https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/' + sohwan.accountID + '&api_key=' + api_key
+    r = requests.get(url)
+
+
+
+
+
+
 def count_game(user_name,targetSeason):
-    api_key = 'RGAPI-caee47f0-c808-4b91-9c60-e2aeb5f61f42'
     summ = get_id(user_name)
 
     beginIndex = 0
