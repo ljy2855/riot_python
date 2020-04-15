@@ -1,12 +1,15 @@
 #-*- coding: utf-8 -*-
 from module import sohwan
-from fun import get_id, count_game
+from fun import get_id, count_game, active_game, dodge
 
 
 while True :
     try :
         print("1.판수 계산")
         print("2.최근 전적 분석")
+        print("3.진행중인 게임")
+        print("4.소환사 id 확인")
+        print("5.닷지할끼?")
         menu = input()
         if menu == '1':
             userName = input("소환사 이름 : ")
@@ -14,6 +17,16 @@ while True :
             count_game(userName,targetSeason)
         elif menu == '2':
             userName = input("소환사 이름 :")
+        elif menu == '3':
+            userName = input("소환사 이름: ")
+            active_game(userName)
+        elif menu == '4':
+            userName = input("소환사 이름 : ")
+            print(get_id(userName).id,get_id(userName).accountID)
+        elif menu == '5':
+            dodge()
+
+
         else:
             break
     except Exception as e:
