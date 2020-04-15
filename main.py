@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from module import sohwan
-from fun import get_id, count_game, active_game, dodge
-from database import update_db
+from fun import get_id, count_game, active_game, dodge, update_db
+
 
 
 while True :
