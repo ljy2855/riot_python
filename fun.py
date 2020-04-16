@@ -1,10 +1,13 @@
 import requests
 import re
 import sqlite3
+import time
+
 from module import sohwan
 
 
-api_key = 'RGAPI-02d294e0-16b8-4e0f-9920-7bd3da3ea8e0'
+api_key = 'RGAPI-be6d927c-255e-42fd-9cdb-fcfcde0c1a78'
+season = '13'
 
 def get_id(user_name):
 
@@ -20,8 +23,13 @@ def update_db(user_name):
     print(query)
     cur.execute(query)
     summ = get_id(user_name)
+    match = get_current_match(sohwan)
     if not cur.fetchall()   :
-        cur.execute("insert into USER_LIST(name,id,accountID) VALUES(?,?,?);",(summ.name,summ.id,summ.accountID))
+        cur.execute("insert into USER_LIST(name,id,accountID,update_time,match) VALUES(?,?,?,?,?);",(summ.name,summ.id,summ.accountID,int(time.time()),sqlite3.Binary(match)))
+    else :
+        cur.execute("update USER_LIST "
+        "set id = '%s', accountID = '%s', update_time = %d where name = '%s';"%(summ.id,summ.accountID,int(time.time()),user_name,))
+
     
     con.commit()
     con.close()
@@ -56,8 +64,11 @@ def dodge():
     
 
 def get_current_match(sohwan):
-    url = 'https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/' + sohwan.accountID + '&api_key=' + api_key
+    url = 'https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/' + sohwan.accountID '?queue=420&queue440&api_key=' + api_key
     r = requests.get(url)
+    match = r.json()['matches']
+    return match
+
 
 
 
