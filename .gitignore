@@ -4,3 +4,4 @@
 SQLiteDatabaseBrowserPortable/Data/PortableApps.comLauncherRuntimeData-SQLiteDatabaseBrowserPortable.ini
 __pycache__/fun.cpython-38.pyc
 __pycache__/fun.cpython-38.pyc
+*.json
