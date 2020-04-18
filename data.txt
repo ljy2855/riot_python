@@ -1,0 +1,7 @@
+1차 데이터: kda, cs, 딜량, 군중제어기, 경험치량, 시야점수
+
+
+match 에서 뽑아낼 데이터
+['participants']['kill', 'deaths' ,'assists','totalDamageDealtToChampions','visionScore','timeCCingOthers',
+'goldEarned','totalMinionsKilled','neutralMinionsKilledTeamJungle','neutralMinionsKilledEnemyJungle',
+'champLevel','visionWardsBoughtInGame','wardsPlaced'.'wardsKilled'

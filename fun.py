@@ -20,25 +20,26 @@ def get_id(user_name):
 def update_db(user_name):
     con = sqlite3.connect('./test.db')
     cur = con.cursor()
-    query = "select * from USER_LIST where name = '%s';" %user_name
-    print(query)
-    cur.execute(query)
-    summ = get_id(user_name)
-    match = get_current_match(summ.accountID)
-    str_match = json.dumps(match)
+    for i in user_name:
+        query = "select * from USER_LIST where name = '{}';".format(i)
+        print(query)
+        cur.execute(query)
+        summ = get_id(i)
+        match = get_current_match(summ.accountID)
+        str_match = json.dumps(match)
     
-    if not cur.fetchall()   :
-        cur.execute("insert into USER_LIST(name,id,accountID,update_time,match) VALUES(?,?,?,?,?);",(summ.name,summ.id,summ.accountID,int(time.time()),str_match))
-    else :
-        cur.execute("update USER_LIST "
-        "set id = '%s', accountID = '%s', update_time = %d,match = '%s' where name = '%s';"%(summ.id,summ.accountID,int(time.time()),str_match,user_name,))
+        if not cur.fetchall()   :
+            cur.execute("insert into USER_LIST(name,id,accountID,update_time,match) VALUES(?,?,?,?,?);",(summ.name,summ.id,summ.accountID,int(time.time()),str_match))
+        else :
+            cur.execute("update USER_LIST set id = '{id}', accountID = '{aid}', update_time = {time},".format(id=summ.id,aid=summ.accountID,time=int(time.time()))\
+            + "match = '{match}' where name = '{name}';".format(match=str_match,name=summ.name))
 
     
     con.commit()
     con.close()
 
 
-#소환사 리스트 뽑기까지
+#db 업뎃 리스트 넘겨주기 변경 필요
 def active_game(user_name):
     summ = get_id(user_name)
     print(summ.id)
@@ -50,7 +51,6 @@ def active_game(user_name):
     for i in r.json()['participants']:
         new.append(get_id(i['summonerName']))
         new[index].get_match_info(i['teamId'],i['championId'])
-        update_db(i['summonerName'])
         print(new[index].name)
         index += 1
 
@@ -70,8 +70,7 @@ def all_game():
             cnt += 1
         if flag == 0:
             break        
-    for i in usr_list:
-        update_db(i)
+    update_db(usr_list)
 
 
 
@@ -89,7 +88,7 @@ def dodge():
     
 
 def get_current_match(accountID):
-    url = 'https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/' + accountID + '?queue=420&queue=440&season=13&endIndex=50&api_key=' + api_key
+    url = 'https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/' + accountID + '?queue=420&season=13&endIndex=50&api_key=' + api_key
     try :
         r = requests.get(url)
         match = r.json()['matches']
