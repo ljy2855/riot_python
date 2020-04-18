@@ -4,4 +4,16 @@
 match 에서 뽑아낼 데이터
 ['participants']['kill', 'deaths' ,'assists','totalDamageDealtToChampions','visionScore','timeCCingOthers',
 'goldEarned','totalMinionsKilled','neutralMinionsKilledTeamJungle','neutralMinionsKilledEnemyJungle',
-'champLevel','visionWardsBoughtInGame','wardsPlaced'.'wardsKilled'
+'champLevel','visionWardsBoughtInGame','wardsPlaced'.'wardsKilled']
+
+
+라인별로
+
+Top 'kill', 'deaths' ,'assists','totalDamageDealtToChampions' 'timeCCingOthers' 'goldEarned','totalMinionsKilled' 'champLevel'
+jungle 'kill', 'deaths' ,'assists','totalDamageDealtToChampions','visionScore','timeCCingOthers' 'neutralMinionsKilledTeamJungle','neutralMinionsKilledEnemyJungle' 'visionWardsBoughtInGame','wardsPlaced'.'wardsKilled'
+mid 'kill', 'deaths' ,'assists','totalDamageDealtToChampions' 'goldEarned','totalMinionsKilled'
+ad
+support
+
+이겼을때 1
+질때 -1
