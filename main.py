@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 from module import sohwan
-from fun import get_id, count_game, active_game, dodge, update_db
+from fun import get_id, count_game, active_game, dodge, update_db, analy
 
 
 
@@ -19,6 +19,7 @@ while True :
             count_game(userName,targetSeason)
         elif menu == '2':
             userName = input("소환사 이름 :")
+            analy(userName)
         elif menu == '3':
             userName = input("소환사 이름: ")
             active_game(userName)
@@ -29,7 +30,9 @@ while True :
             dodge()
         elif menu == '6':
             userName = input("소환사 이름: ")
-            update_db(userName)
+            usr_list =[]
+            usr_list.append(userName)
+            update_db(usr_list)
 
 
 

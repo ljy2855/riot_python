@@ -7,7 +7,7 @@ import json
 from module import sohwan
 
 
-api_key = 'RGAPI-6c7b0608-1a34-43b4-ae37-4a83550e0328'
+api_key = 'RGAPI-95ab0087-5a97-4b53-8469-a549a01ab1f5'
 season = '13'
 
 def get_id(user_name):
@@ -27,6 +27,14 @@ def update_db(user_name):
         summ = get_id(i)
         match = get_current_match(summ.accountID)
         str_match = json.dumps(match)
+        
+        cnt = 0
+        for i in match:
+            cham = i['champion']
+            lane = i['lane']
+            gameid = i['gameId']
+            analy(cham,lane,gameid)
+
     
         if not cur.fetchall()   :
             cur.execute("insert into USER_LIST(name,id,accountID,update_time,match) VALUES(?,?,?,?,?);",(summ.name,summ.id,summ.accountID,int(time.time()),str_match))
@@ -37,6 +45,37 @@ def update_db(user_name):
     
     con.commit()
     con.close()
+
+def analy(cham,lane,gameid):
+    url = 'https://kr.api.riotgames.com/lol/match/v4/matches/' + str(gameid) + '?api_key=' + api_key
+    r = requests.get(url)
+    user = r.json()['participants']
+    for i in user:
+        if i['championId'] == int(cham):
+            break
+    if i['stats']['win'] == 1:
+        score = 1
+    else :
+        score = -1
+    print(score)
+    
+    if i['timeline']['lane'] == 'MIDDLE':
+        print('mid')
+
+    elif i['timeline']['lane'] == 'TOP':
+        print('top')
+    
+    elif i['timeline']['lane'] == 'JUNGLE':
+        print('jungle')
+    elif i['timeline']['lane'] == 'BOTTOM':
+        if i['timeline']['role'] == 'DUO_CARRY':
+            print('ad')
+        elif i['timeline']['role'] == 'DUO_SUPPORT':
+            print('support')
+    else:
+        print(i['timeline']['lane'])
+
+
 
 
 #db 업뎃 리스트 넘겨주기 변경 필요
@@ -81,9 +120,10 @@ def dodge():
         line = input()
         index = line.find("님이 방에 참가했습니다.")
         summ.append(get_id(line[0:index]))
-        update_db(summ[i].name)
+        analy(summ[i].name)
         print(summ[i].name)
 
+    
 
     
 
