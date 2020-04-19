@@ -12,38 +12,52 @@ season = '13'
 
 def get_id(user_name):
 
-    url = 'https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + user_name + '?api_key=' + api_key
-    r = requests.get(url)
-    new = sohwan(r.json()['id'],r.json()['accountId'],user_name)
-    return new
-
+    try :
+        url = 'https://kr.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + user_name + '?api_key=' + api_key
+        r = requests.get(url)
+        new = sohwan(r.json()['id'],r.json()['accountId'],user_name)
+        return new
+    except Exception as e:
+        print(e)
 def update_db(user_name):
     con = sqlite3.connect('./test.db')
     cur = con.cursor()
     for i in user_name:
-        query = "select * from USER_LIST where name = '{}';".format(i)
-        print(query)
-        cur.execute(query)
-        summ = get_id(i)
-        match = get_current_match(summ.accountID)
+    
+        try :
+            summ = get_id(i)
+            match = get_current_match(summ.accountID)
+        except Exception as e:
+            print(e)
+            pass
         str_match = json.dumps(match)
-        
+        score = 0
         cnt = 0
-        for i in match:
-            cham = i['champion']
-            lane = i['lane']
-            gameid = i['gameId']
-            analy(cham,lane,gameid)
-
+        try:
+            for i in match:
+                cham = i['champion']
+                lane = i['lane']
+                gameid = i['gameId']
+                op = analy(cham,lane,gameid)
+                if op != 0 :
+                    cnt +=1
+                    score += op
+            score /= cnt
+            print(score)
+            query = "select * from USER_LIST where name = '{}';".format(i)
+            cur.execute(query)
+            time.sleep(0.5)
+            if not cur.fetchall()   :
+                cur.execute("insert into USER_LIST(name,id,accountID,update_time,match,score) VALUES(?,?,?,?,?,?);",(summ.name,summ.id,summ.accountID,int(time.time()),str_match,score))
+            else :
+                cur.execute("update USER_LIST set id = '{id}', accountID = '{aid}', update_time = {time},".format(id=summ.id,aid=summ.accountID,time=int(time.time()))\
+                + "match = '{match}', score = {score} where name = '{name}';".format(match=str_match,score = score,name=summ.name))
+            con.commit()
+        except Exception as e:
+            print(e)
+            pass
     
-        if not cur.fetchall()   :
-            cur.execute("insert into USER_LIST(name,id,accountID,update_time,match) VALUES(?,?,?,?,?);",(summ.name,summ.id,summ.accountID,int(time.time()),str_match))
-        else :
-            cur.execute("update USER_LIST set id = '{id}', accountID = '{aid}', update_time = {time},".format(id=summ.id,aid=summ.accountID,time=int(time.time()))\
-            + "match = '{match}' where name = '{name}';".format(match=str_match,name=summ.name))
-
     
-    con.commit()
     con.close()
 
 def analy(cham,lane,gameid):
@@ -57,23 +71,30 @@ def analy(cham,lane,gameid):
         score = 1
     else :
         score = -1
-    print(score)
     
     if i['timeline']['lane'] == 'MIDDLE':
+        return score
         print('mid')
 
     elif i['timeline']['lane'] == 'TOP':
+        return score
         print('top')
     
     elif i['timeline']['lane'] == 'JUNGLE':
+        return score
         print('jungle')
     elif i['timeline']['lane'] == 'BOTTOM':
         if i['timeline']['role'] == 'DUO_CARRY':
+            return score
             print('ad')
         elif i['timeline']['role'] == 'DUO_SUPPORT':
+            return score
             print('support')
+        else :
+            return 0
     else:
-        print(i['timeline']['lane'])
+        return 0
+        
 
 
 
@@ -128,7 +149,7 @@ def dodge():
     
 
 def get_current_match(accountID):
-    url = 'https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/' + accountID + '?queue=420&season=13&endIndex=50&api_key=' + api_key
+    url = 'https://kr.api.riotgames.com/lol/match/v4/matchlists/by-account/' + accountID + '?queue=420&season=13&endIndex=10&api_key=' + api_key
     try :
         r = requests.get(url)
         match = r.json()['matches']
